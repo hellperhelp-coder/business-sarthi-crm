@@ -8814,6 +8814,17 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
-    </script>
+    
+    
+    // Add new invoice row to table
+function addInvoiceRowToTable(date, invoiceNo, customer, mobile, amount) {
+    const tbody = document.querySelector('#invoicesTable tbody') || document.querySelector('tbody');
+    if (!tbody) return;
+    
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `<td>${date}</td><td>SALE</td><td>${invoiceNo}</td><td>${mobile}</td><td>${customer}</td><td>₹${amount}</td>`;
+    tbody.appendChild(newRow);
+}
+</script>
 </body>
 </html>
