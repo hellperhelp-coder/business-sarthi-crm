@@ -6136,6 +6136,18 @@
             const sidebarLinks = document.querySelectorAll('.sidebar-menu .nav-link');
             const contentSections = document.querySelectorAll('.content-section');
             
+    // Load invoices from localStorage on page load
+    const savedInvoices = loadInvoicesFromLocal();
+    const invoicesTable = document.querySelector('#invoicesTable tbody');
+    if (invoicesTable && savedInvoices.length > 0) {
+        savedInvoices.forEach(invoice => {
+            const invoiceNo = 'INV' + Math.floor(Math.random() * 1000000);
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${invoice.date}</td><td>SALE</td><td>${invoiceNo}</td><td>${invoice.mobile}</td><td>${invoice.customer}</td><td>${invoice.total}</td>`;
+            invoicesTable.appendChild(row);
+        });
+    }
+            
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -8891,11 +8903,24 @@ setTimeout(function() {
                 const dt = document.getElementById('invoiceDate')?.value;
                 const tot = document.getElementById('invoiceTotal')?.value;
                 if (cust && mob && dt && tot) {
+                                        const invoiceData = {date: dt, customer: cust, mobile: mob, total: tot};
+                    saveInvoiceToLocal(invoiceData);
+
                     window.addInvoiceToTableUI(cust, mob, dt, tot);
                 }
             }, 50);
         };
     }
+// localStorage invoice functions
+function saveInvoiceToLocal(invoiceData) {
+    let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
+    invoices.push(invoiceData);
+    localStorage.setItem('invoices', JSON.stringify(invoices));
+}
+function loadInvoicesFromLocal() {
+    return JSON.parse(localStorage.getItem('invoices')) || [];
+}
+
 }, 1000);
 </script>
 </body>
