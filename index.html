@@ -8843,8 +8843,18 @@ if (oldSave) {
     const customer = document.getElementById('invoiceCustomer').value;
     const mobile = document.getElementById('invoiceMobile').value;
     const total = document.getElementById('invoiceTotal').value;
-    saveInvoiceToLocal({customer, mobile, total});
-    bootstrap.Modal.getInstance(document.getElementById('generateInvoiceModal')).hide();
+                      const date = document.getElementById('invoiceDate').value;
+                      const invoiceId = 'INV' + Math.floor(Math.random()*100000);
+                      const invoiceData = {
+                                              date: date,
+                                              invoiceId: invoiceId,
+                                              type: 'SALE',
+                                                      customer: customer,
+                                              mobile: mobile,
+                                              total: total
+                                                                  };
+                saveInvoiceToLocal(invoiceData);
+                refreshInvoiceTable();    bootstrap.Modal.getInstance(document.getElementById('generateInvoiceModal')).hide();
   };
 }
         
