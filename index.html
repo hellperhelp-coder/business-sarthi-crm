@@ -8845,6 +8845,19 @@ if (oldSave) {
     bootstrap.Modal.getInstance(document.getElementById('generateInvoiceModal')).hide();
   };
 }
+        
+// DISPLAY SAVED INVOICES
+window.addEventListener('load', function() {
+  const tbody = document.querySelector('#invoicesTable tbody') || document.querySelector('tbody');
+  if (tbody) {
+    const saved = loadInvoicesFromLocal();
+    saved.forEach(inv => {
+      const row = document.createElement('tr');
+      row.innerHTML = '<td>'+new Date().toLocaleDateString()+'</td><td>SALE</td><td>INV'+Math.floor(Math.random()*10000)+'</td><td>'+inv.mobile+'</td><td>'+inv.customer+'</td><td><span class="badge bg-success">Paid</span></td>';
+      tbody.appendChild(row);
+    });
+  }
+});
     </script>
 </body>
 </html>
