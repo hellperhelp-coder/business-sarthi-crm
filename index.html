@@ -8863,6 +8863,40 @@ document.addEventListener('click', function(e) {
         }, 100);
     }
 });
+
+    
+    // FINAL FIX: Add row when Save Invoice button is clicked
+window.addInvoiceToTableUI = function(customer, mobile, date, total) {
+    const tbody = document.querySelector('#invoicesTable tbody') || document.querySelector('table tbody:last-of-type');
+    if (tbody) {
+        const tr = document.createElement('tr');
+        const invoiceId = 'INV' + Math.floor(Math.random() * 1000000);
+        tr.innerHTML = '<td>' + date + '</td><td>SALE</td><td>' + invoiceId + '</td><td>' + mobile + '</td><td>' + customer + '</td><td>\u20b9' + total + '</td>';
+        tbody.appendChild(tr);
+        console.log('Invoice added to table:', customer);
+    }
+};
+
+// Override Bootstrap modal close to add the row
+setTimeout(function() {
+    const saveBtn = document.getElementById('saveInvoiceBtn');
+    if (saveBtn && !saveBtn._invoiceHandlerAttached) {
+        saveBtn._invoiceHandlerAttached = true;
+        const originalClick = saveBtn.onclick;
+        saveBtn.onclick = function() {
+            if (originalClick) originalClick.call(this);
+            setTimeout(function() {
+                const cust = document.getElementById('invoiceCustomer')?.value;
+                const mob = document.getElementById('invoiceMobile')?.value;
+                const dt = document.getElementById('invoiceDate')?.value;
+                const tot = document.getElementById('invoiceTotal')?.value;
+                if (cust && mob && dt && tot) {
+                    window.addInvoiceToTableUI(cust, mob, dt, tot);
+                }
+            }, 50);
+        };
+    }
+}, 1000);
 </script>
 </body>
 </html>
