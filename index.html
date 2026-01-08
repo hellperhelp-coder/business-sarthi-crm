@@ -660,7 +660,8 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    663
+                                    
                                         <tr>
                                             <td>23-Aug-2025</td>
                                             <td>11IVSB1</td>
@@ -8858,8 +8859,11 @@ if (oldSave) {
   };
 }
         
-// DISPLAY SAVED INVOICES
-window.addEventListener('load', function() {
+8861
+        8876
+        
+window.8862
+    , function() {
   const tbody = document.querySelector('#invoicesTable tbody') || document.querySelector('tbody');
   if (tbody) {
     const saved = loadInvoicesFromLocal();
@@ -8877,8 +8881,7 @@ function refreshInvoiceTable() {
     if (!invoiceTable) return;
     
     // Clear existing rows
-    invoiceTable.innerHTML = '';
-    
+// invoiceTable.innerHTML = '';  // Don't clear - preserve hardcoded invoices    
     // Load from localStorage
     const savedInvoices = JSON.parse(localStorage.getItem('crm_invoices')) || [];
     
