@@ -8814,6 +8814,37 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
+        
+// ===== LOCALSTORAGE DATA PERSISTENCE =====
+function saveInvoiceToLocal(invoiceData) {
+  try {
+    let invoices = JSON.parse(localStorage.getItem('crm_invoices')) || [];
+    invoices.push(invoiceData);
+    localStorage.setItem('crm_invoices', JSON.stringify(invoices));
+    console.log('Invoice saved:', invoiceData);
+    alert('Invoice saved successfully!');
+  } catch(e) { console.log('Save error:', e); }
+}
+
+function loadInvoicesFromLocal() {
+  try {
+    let saved = JSON.parse(localStorage.getItem('crm_invoices')) || [];
+    console.log('Loaded invoices:', saved);
+    return saved;
+  } catch(e) { return []; }
+}
+
+// Override saveInvoiceBtn
+const oldSave = document.getElementById('saveInvoiceBtn');
+if (oldSave) {
+  oldSave.onclick = function() {
+    const customer = document.getElementById('invoiceCustomer').value;
+    const mobile = document.getElementById('invoiceMobile').value;
+    const total = document.getElementById('invoiceTotal').value;
+    saveInvoiceToLocal({customer, mobile, total});
+    bootstrap.Modal.getInstance(document.getElementById('generateInvoiceModal')).hide();
+  };
+}
     </script>
 </body>
 </html>
