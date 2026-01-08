@@ -8860,6 +8860,29 @@ window.addEventListener('load', function() {
     });
   }
 });
+
+        // Refresh Invoice Table from localStorage
+function refreshInvoiceTable() {
+    const invoiceTable = document.querySelector('#invoicesTable tbody') || document.querySelector('table tbody');
+    if (!invoiceTable) return;
+    
+    // Clear existing rows
+    invoiceTable.innerHTML = '';
+    
+    // Load from localStorage
+    const savedInvoices = JSON.parse(localStorage.getItem('crm_invoices')) || [];
+    
+    // Add rows for each invoice
+    savedInvoices.forEach(inv => {
+        const row = document.createElement('tr');
+        const invoiceId = 'INV' + Math.floor(Math.random()*100000);
+        const dateStr = new Date().toLocaleDateString('en-GB');
+        row.innerHTML = '<td>' + dateStr + '</td><td>SALE</td><td>' + invoiceId + '</td><td>' + (inv.mobile || '-') + '</td><td>' + (inv.customer || '-') + '</td><td><span class="status-badge status-paid">Paid</span></td>';
+        invoiceTable.appendChild(row);
+    });
+    
+    console.log('Invoice table refreshed with ' + savedInvoices.length + ' invoices');
+}
     </script>
 </body>
 </html>
