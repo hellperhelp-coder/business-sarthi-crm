@@ -8928,6 +8928,28 @@ function loadInvoicesFromLocal() {
 }
 
 }, 1000);
+        
+// CRITICAL FIX FOR ALL NAVIGATION
+setTimeout(() => {
+    // Fix 1: Make Dashboard active by default
+    const dash = document.getElementById('dashboard');
+    if (dash) dash.classList.add('active');
+    
+    // Fix 2: Re-attach all click handlers
+    const links = document.querySelectorAll('.sidebar-menu .nav-link');
+    links.forEach(link => {
+        link.onclick = function(e) {
+            e.preventDefault();
+            const id = this.getAttribute('data-section');
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            links.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+            const sec = document.getElementById(id);
+            if (sec) sec.classList.add('active');
+        };
+    });
+}, 100);
+
 </script>
 </body>
 </html>
