@@ -8707,6 +8707,12 @@
                         updateInventoryForSales(invoiceItems, customer);
                     }
                     
+
+        
+            // Save invoice to localStorage
+            const invoiceData = {date: date, customer: customer, mobile: mobile, total: total};
+            saveInvoiceToLocal(invoiceData);
+            window.addInvoiceToTableUI(customer, mobile, date, total);
                     alert(`Invoice for "${customer}" saved successfully!`);
                     bootstrap.Modal.getInstance(document.getElementById('generateInvoiceModal')).hide();
                 });
