@@ -8841,6 +8841,28 @@ if (originalSaveBtn) {
         addInvoiceRowToTable(date, invoiceNo, customer, mobile, total);
     `);
 }
+
+    
+    // SIMPLE FIX: Listen for when invoice is saved and add row
+document.addEventListener('click', function(e) {
+    if (e.target && (e.target.textContent.includes('Save Invoice') || e.target.id === 'saveInvoiceBtn')) {
+        setTimeout(function() {
+            const customer = document.getElementById('invoiceCustomer')?.value;
+            const mobile = document.getElementById('invoiceMobile')?.value;
+            const date = document.getElementById('invoiceDate')?.value;
+            const total = document.getElementById('invoiceTotal')?.value;
+            if (customer && mobile && date && total) {
+                const invoiceNo = 'INV' + Math.floor(Math.random()*1000000);
+                const tbody = document.querySelector('#invoicesTable tbody') || document.querySelector('table tbody');
+                if (tbody) {
+                    const newRow = document.createElement('tr');
+                    newRow.innerHTML = `<td>${date}</td><td>SALE</td><td>${invoiceNo}</td><td>${mobile}</td><td>${customer}</td><td>₹${total}</td>`;
+                    tbody.appendChild(newRow);
+                }
+            }
+        }, 100);
+    }
+});
 </script>
 </body>
 </html>
