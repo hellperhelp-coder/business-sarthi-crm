@@ -8949,6 +8949,47 @@ setTimeout(() => {
         };
     });
 }, 100);
+        
+// ULTRA FIX - Direct DOM manipulation
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        // Hide all sections first
+        const allSections = document.querySelectorAll('[class*="content-section"]');
+        allSections.forEach(s => s.style.display = 'none');
+        
+        // Show dashboard by default
+        const dashboard = document.getElementById('dashboard');
+        if (dashboard) {
+            dashboard.style.display = 'block';
+            dashboard.classList.add('active');
+        }
+        
+        // Attach handlers to ALL elements with data-section
+        document.querySelectorAll('[data-section]').forEach(elem => {
+            elem.style.cursor = 'pointer';
+            elem.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const sectionId = this.getAttribute('data-section');
+                console.log('Clicked:', sectionId);
+                
+                // Hide all
+                allSections.forEach(s => s.style.display = 'none');
+                document.querySelectorAll('[data-section]').forEach(l => l.classList.remove('active'));
+                
+                // Show selected
+                this.classList.add('active');
+                const target = document.getElementById(sectionId);
+                if (target) {
+                    target.style.display = 'block';
+                    target.classList.add('active');
+                }
+            });
+        });
+    }, 200);
+});
+
 
 </script>
 </body>
