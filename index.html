@@ -8825,6 +8825,22 @@ function addInvoiceRowToTable(date, invoiceNo, customer, mobile, amount) {
     newRow.innerHTML = `<td>${date}</td><td>SALE</td><td>${invoiceNo}</td><td>${mobile}</td><td>${customer}</td><td>₹${amount}</td>`;
     tbody.appendChild(newRow);
 }
+
+    
+// Override save invoice button to add row to table
+const originalSaveBtn = document.querySelector('[onclick*="saveInvoice"]');
+if (originalSaveBtn) {
+    const originalOnclick = originalSaveBtn.getAttribute('onclick');
+    originalSaveBtn.setAttribute('onclick', `
+        ${originalOnclick};
+        const customer = document.getElementById('invoiceCustomer').value;
+        const mobile = document.getElementById('invoiceMobile').value;
+        const date = document.getElementById('invoiceDate').value;
+        const total = document.getElementById('invoiceTotal').value;
+        const invoiceNo = 'INV' + Math.floor(Math.random()*100000);
+        addInvoiceRowToTable(date, invoiceNo, customer, mobile, total);
+    `);
+}
 </script>
 </body>
 </html>
