@@ -8881,7 +8881,7 @@ function refreshInvoiceTable() {
     if (!invoiceTable) return;
     
     // Clear existing rows
-// invoiceTable.innerHTML = '';  // Don't clear - preserve hardcoded invoices    
+invoiceTable.innerHTML = ''; = '';  // Don't clear - preserve hardcoded invoices    
     // Load from localStorage
     const savedInvoices = JSON.parse(localStorage.getItem('crm_invoices')) || [];
     
