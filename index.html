@@ -9235,12 +9235,14 @@ if (thead && thead.textContent.includes('Service Requests')) {      const tbody 
           const row = document.createElement('tr');
           row.setAttribute('data-service', latestService.id);
           row.innerHTML = `
+<td>${latestService.id}</td>
             <td>${latestService.createdDate}</td>
-<td>${latestService.customerName}</td>            <td>${latestService.id}</td>
-            <td>${latestService.mobile}</td>
-<td>${latestService.productCategory}</td>            <td><span class="status-badge status-${latestService.status.toLowerCase()}">${latestService.status}</span></td>
- <td>${latestService.problemDescription}</td>
-          `;
+            <td>${latestService.customerName}</td>
+            <td>${latestService.customerPhone}</td>
+            <td>${latestService.productCategory}</td>
+            <td>${latestService.problemDescription}</td>
+            <td><span class="status-badge status-${latestService.status.toLowerCase()}">${latestService.status}</span></td>
+            <td>-</td>
           tbody.insertBefore(row, tbody.firstChild);
         }
       }
