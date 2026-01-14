@@ -9249,6 +9249,57 @@ const services = crmDB.getServices();
     }
   });
 }
+
+// ===== FORM SUBMIT HANDLERS FOR DATA PERSISTENCE =====
+
+// Invoice Form Submit Handler
+const invoiceForm = document.getElementById('invoiceForm');
+if (invoiceForm) {
+  invoiceForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const invoiceData = {
+      id: 'INV' + Date.now(),
+      customerName: document.getElementById('customerName')?.value || '',
+      mobile: document.getElementById('customerMobile')?.value || '',
+      email: document.getElementById('customerEmail')?.value || '',
+      amount: parseFloat(document.getElementById('invoiceAmount')?.value || 0),
+      description: document.getElementById('invoiceDescription')?.value || '',
+      status: 'Pending',
+      createdDate: new Date().toLocaleDateString('en-GB')
+    };
+    
+    crmDB.saveInvoice(invoiceData);
+    updateInvoiceTable();
+    invoiceForm.reset();
+    alert('Invoice saved successfully!');
+  });
+}
+
+// Service Form Submit Handler
+const serviceForm = document.getElementById('serviceForm');
+if (serviceForm) {
+  serviceForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const serviceData = {
+      id: 'SR' + String(crmDB.getServices().length + 1).padStart(3, '0'),
+      customerName: document.getElementById('serviceCustName')?.value || '',
+      mobile: document.getElementById('serviceCustMobile')?.value || '',
+      email: document.getElementById('serviceCustEmail')?.value || '',
+      product: document.getElementById('serviceProduct')?.value || '',
+      amount: parseFloat(document.getElementById('serviceAmount')?.value || 0),
+      description: document.getElementById('serviceProblem')?.value || '',
+      status: 'Pending',
+      createdDate: new Date().toLocaleDateString('en-GB')
+    };
+    
+    crmDB.saveService(serviceData);
+    updateServiceTable();
+    serviceForm.reset();
+    alert('Service request saved successfully!');
+  });
+}
 </script>
     
 </body>
