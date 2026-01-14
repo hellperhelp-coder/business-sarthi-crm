@@ -9001,6 +9001,12 @@ function loadAllDataToTables() {
   const invoiceTableBody = document.querySelector('table:has(thead th:contains("Date")) tbody');
   if (invoiceTableBody && crmDB.getInvoices().length > 0) {
     updateInvoiceTable();
+  
+  // Load services to table
+  // Load services to table
+  const services = crmDB.getServices();
+      if (services && services.length > 0) {
+    updateServiceTable();
   }
 }
 
