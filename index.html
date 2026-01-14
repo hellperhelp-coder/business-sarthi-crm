@@ -9225,8 +9225,7 @@ const services = crmDB.getServices();
   const tables = document.querySelectorAll('table');
   tables.forEach(table => {
     const thead = table.querySelector('thead');
-    if (thead && thead.textContent.includes('Service Request')) {
-      const tbody = table.querySelector('tbody');
+if (thead && thead.textContent.includes('Service Requests')) {      const tbody = table.querySelector('tbody');
       if (tbody && services.length > 0) {
         // Add new service to table
         const latestService = services[services.length - 1];
