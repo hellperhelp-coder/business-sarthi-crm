@@ -9221,8 +9221,35 @@ function updateInvoiceTable() {
 
 // Update service table with saved data
 function updateServiceTable() {
-  const services = crmDB.getServices();
-  // Similar logic to updateInvoiceTable
+const services = crmDB.getServices();
+  
+  // Populate service request table
+  const tables = document.querySelectorAll('table');
+  tables.forEach(table => {
+    const thead = table.querySelector('thead');
+    if (thead && thead.textContent.includes('Service Request')) {
+      const tbody = table.querySelector('tbody');
+      if (tbody && services.length > 0) {
+        // Add new service to table
+        const latestService = services[services.length - 1];
+        const existingRow = tbody.querySelector(`tr[data-service="${latestService.id}"]`);
+        
+        if (!existingRow) {
+          const row = document.createElement('tr');
+          row.setAttribute('data-service', latestService.id);
+          row.innerHTML = `
+            <td>${latestService.createdDate}</td>
+            <td>Rs. ${latestService.amount}</td>
+            <td>${latestService.id}</td>
+            <td>${latestService.mobile}</td>
+            <td>${latestService.email}</td>
+            <td><span class="status-badge status-${latestService.status.toLowerCase()}">${latestService.status}</span></td>
+          `;
+          tbody.insertBefore(row, tbody.firstChild);
+        }
+      }
+    }
+  });
 }
 </script>
     
