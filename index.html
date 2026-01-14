@@ -9236,11 +9236,10 @@ if (thead && thead.textContent.includes('Service Requests')) {      const tbody 
           row.setAttribute('data-service', latestService.id);
           row.innerHTML = `
             <td>${latestService.createdDate}</td>
-            <td>Rs. ${latestService.amount}</td>
-            <td>${latestService.id}</td>
+<td>${latestService.customerName}</td>            <td>${latestService.id}</td>
             <td>${latestService.mobile}</td>
-            <td>${latestService.email}</td>
-            <td><span class="status-badge status-${latestService.status.toLowerCase()}">${latestService.status}</span></td>
+<td>${latestService.productCategory}</td>            <td><span class="status-badge status-${latestService.status.toLowerCase()}">${latestService.status}</span></td>
+ <td>${latestService.problemDescription}</td>
           `;
           tbody.insertBefore(row, tbody.firstChild);
         }
