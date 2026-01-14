@@ -9235,14 +9235,12 @@ if (thead && thead.textContent.includes('Service Requests')) {      const tbody 
           const row = document.createElement('tr');
           row.setAttribute('data-service', latestService.id);
           row.innerHTML = `
-<td>${latestService.id}</td>
             <td>${latestService.createdDate}</td>
-            <td>${latestService.customerName}</td>
-            <td>${latestService.customerPhone}</td>
-            <td>${latestService.productCategory}</td>
-            <td>${latestService.problemDescription}</td>
-            <td><span class="status-badge status-${latestService.status.toLowerCase()}">${latestService.status}</span></td>
-            <td>-</td>
+<td>${latestService.customerName}</td>            <td>${latestService.id}</td>
+            <td>${latestService.mobile}</td>
+<td>${latestService.productCategory}</td>            <td><span class="status-badge status-${latestService.status.toLowerCase()}">${latestService.status}</span></td>
+ <td>${latestService.problemDescription}</td>
+          `;
           tbody.insertBefore(row, tbody.firstChild);
         }
       }
@@ -9285,11 +9283,11 @@ if (serviceForm) {
     const serviceData = {
       id: 'SR' + String(crmDB.getServices().length + 1).padStart(3, '0'),
       customerName: document.getElementById('serviceCustName')?.value || '',
-      customerPhone: document.getElementById('serviceCustMobile')?.value || '',
+      mobile: document.getElementById('serviceCustMobile')?.value || '',
       email: document.getElementById('serviceCustEmail')?.value || '',
-      productCategory: document.getElementById('serviceProduct')?.value || '',
+      product: document.getElementById('serviceProduct')?.value || '',
       amount: parseFloat(document.getElementById('serviceAmount')?.value || 0),
-      problemDescription: document.getElementById('serviceProblem')?.value || '',
+      description: document.getElementById('serviceProblem')?.value || '',
       status: 'Pending',
       createdDate: new Date().toLocaleDateString('en-GB')
     };
