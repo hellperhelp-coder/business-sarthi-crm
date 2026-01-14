@@ -8997,6 +8997,27 @@ window.addEventListener('load', function() {
 });
 
 function loadAllDataToTables() {
+        // Clear old mock data from tables first
+    const invoiceBodies = document.querySelectorAll('table thead');
+    invoiceBodies.forEach(thead => {
+        if (thead && thead.textContent.includes('Invoice')) {
+            const tbody = thead.closest('table').querySelector('tbody');
+            if (tbody) tbody.innerHTML = '';
+        }
+    });
+    
+    const serviceBodies = document.querySelectorAll('table thead');
+    serviceBodies.forEach(thead => {
+        if (thead && thead.textContent.includes('Service ID')) {
+            const tbody = thead.closest('table').querySelector('tbody');
+            if (tbody) tbody.innerHTML = '';
+        }
+    });
+        
+    // Now load all saved data into the cleared tables
+    updateInvoiceTable();
+    updateServiceTable();
+    
   // Load invoices to table
   updateInvoiceTable();
   updateServiceTable();
