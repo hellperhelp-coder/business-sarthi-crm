@@ -6136,18 +6136,6 @@
             const sidebarLinks = document.querySelectorAll('.sidebar-menu .nav-link');
             const contentSections = document.querySelectorAll('.content-section');
             
-    // Load invoices from localStorage on page load
-    const savedInvoices = loadInvoicesFromLocal();
-    const invoicesTable = document.querySelector('#invoicesTable tbody');
-    if (invoicesTable && savedInvoices.length > 0) {
-        savedInvoices.forEach(invoice => {
-            const invoiceNo = 'INV' + Math.floor(Math.random() * 1000000);
-            const row = document.createElement('tr');
-            row.innerHTML = `<td>${invoice.date}</td><td>SALE</td><td>${invoiceNo}</td><td>${invoice.mobile}</td><td>${invoice.customer}</td><td>${invoice.total}</td>`;
-            invoicesTable.appendChild(row);
-        });
-    }
-            
             sidebarLinks.forEach(link => {
                 link.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -8707,12 +8695,6 @@
                         updateInventoryForSales(invoiceItems, customer);
                     }
                     
-
-        
-            // Save invoice to localStorage
-            const invoiceData = {date: date, customer: customer, mobile: mobile, total: total};
-            saveInvoiceToLocal(invoiceData);
-            window.addInvoiceToTableUI(customer, mobile, date, total);
                     alert(`Invoice for "${customer}" saved successfully!`);
                     bootstrap.Modal.getInstance(document.getElementById('generateInvoiceModal')).hide();
                 });
@@ -8832,165 +8814,6 @@
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
         });
-    
-    
-    // Add new invoice row to table
-function addInvoiceRowToTable(date, invoiceNo, customer, mobile, amount) {
-    const tbody = document.querySelector('#invoicesTable tbody') || document.querySelector('tbody');
-    if (!tbody) return;
-    
-    const newRow = document.createElement('tr');
-    newRow.innerHTML = `<td>${date}</td><td>SALE</td><td>${invoiceNo}</td><td>${mobile}</td><td>${customer}</td><td>₹${amount}</td>`;
-    tbody.appendChild(newRow);
-}
-
-    
-// Override save invoice button to add row to table
-const originalSaveBtn = document.querySelector('[onclick*="saveInvoice"]');
-if (originalSaveBtn) {
-    const originalOnclick = originalSaveBtn.getAttribute('onclick');
-    originalSaveBtn.setAttribute('onclick', `
-        ${originalOnclick};
-        const customer = document.getElementById('invoiceCustomer').value;
-        const mobile = document.getElementById('invoiceMobile').value;
-        const date = document.getElementById('invoiceDate').value;
-        const total = document.getElementById('invoiceTotal').value;
-        const invoiceNo = 'INV' + Math.floor(Math.random()*100000);
-        addInvoiceRowToTable(date, invoiceNo, customer, mobile, total);
-    `);
-}
-
-    
-    // SIMPLE FIX: Listen for when invoice is saved and add row
-document.addEventListener('click', function(e) {
-    if (e.target && (e.target.textContent.includes('Save Invoice') || e.target.id === 'saveInvoiceBtn')) {
-        setTimeout(function() {
-            const customer = document.getElementById('invoiceCustomer')?.value;
-            const mobile = document.getElementById('invoiceMobile')?.value;
-            const date = document.getElementById('invoiceDate')?.value;
-            const total = document.getElementById('invoiceTotal')?.value;
-            if (customer && mobile && date && total) {
-                const invoiceNo = 'INV' + Math.floor(Math.random()*1000000);
-                const tbody = document.querySelector('#invoicesTable tbody') || document.querySelector('table tbody');
-                if (tbody) {
-                    const newRow = document.createElement('tr');
-                    newRow.innerHTML = `<td>${date}</td><td>SALE</td><td>${invoiceNo}</td><td>${mobile}</td><td>${customer}</td><td>₹${total}</td>`;
-                    tbody.appendChild(newRow);
-                }
-            }
-        }, 100);
-    }
-});
-
-    
-    // FINAL FIX: Add row when Save Invoice button is clicked
-window.addInvoiceToTableUI = function(customer, mobile, date, total) {
-    const tbody = document.querySelector('#invoicesTable tbody') || document.querySelector('table tbody:last-of-type');
-    if (tbody) {
-        const tr = document.createElement('tr');
-        const invoiceId = 'INV' + Math.floor(Math.random() * 1000000);
-        tr.innerHTML = '<td>' + date + '</td><td>SALE</td><td>' + invoiceId + '</td><td>' + mobile + '</td><td>' + customer + '</td><td>\u20b9' + total + '</td>';
-        tbody.appendChild(tr);
-        console.log('Invoice added to table:', customer);
-    }
-};
-
-// Override Bootstrap modal close to add the row
-setTimeout(function() {
-    const saveBtn = document.getElementById('saveInvoiceBtn');
-    if (saveBtn && !saveBtn._invoiceHandlerAttached) {
-        saveBtn._invoiceHandlerAttached = true;
-        const originalClick = saveBtn.onclick;
-        saveBtn.onclick = function() {
-            if (originalClick) originalClick.call(this);
-            setTimeout(function() {
-                const cust = document.getElementById('invoiceCustomer')?.value;
-                const mob = document.getElementById('invoiceMobile')?.value;
-                const dt = document.getElementById('invoiceDate')?.value;
-                const tot = document.getElementById('invoiceTotal')?.value;
-                if (cust && mob && dt && tot) {
-                                        const invoiceData = {date: dt, customer: cust, mobile: mob, total: tot};
-                    saveInvoiceToLocal(invoiceData);
-
-                    window.addInvoiceToTableUI(cust, mob, dt, tot);
-                }
-            }, 50);
-        };
-    }
-// localStorage invoice functions
-function saveInvoiceToLocal(invoiceData) {
-    let invoices = JSON.parse(localStorage.getItem('invoices')) || [];
-    invoices.push(invoiceData);
-    localStorage.setItem('invoices', JSON.stringify(invoices));
-}
-function loadInvoicesFromLocal() {
-    return JSON.parse(localStorage.getItem('invoices')) || [];
-}
-
-}, 1000);
-        
-// CRITICAL FIX FOR ALL NAVIGATION
-setTimeout(() => {
-    // Fix 1: Make Dashboard active by default
-    const dash = document.getElementById('dashboard');
-    if (dash) dash.classList.add('active');
-    
-    // Fix 2: Re-attach all click handlers
-    const links = document.querySelectorAll('.sidebar-menu .nav-link');
-    links.forEach(link => {
-        link.onclick = function(e) {
-            e.preventDefault();
-            const id = this.getAttribute('data-section');
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            links.forEach(l => l.classList.remove('active'));
-            this.classList.add('active');
-            const sec = document.getElementById(id);
-            if (sec) sec.classList.add('active');
-        };
-    });
-}, 100);
-        
-// ULTRA FIX - Direct DOM manipulation
-document.addEventListener('DOMContentLoaded', function() {
-    setTimeout(function() {
-        // Hide all sections first
-        const allSections = document.querySelectorAll('[class*="content-section"]');
-        allSections.forEach(s => s.style.display = 'none');
-        
-        // Show dashboard by default
-        const dashboard = document.getElementById('dashboard');
-        if (dashboard) {
-            dashboard.style.display = 'block';
-            dashboard.classList.add('active');
-        }
-        
-        // Attach handlers to ALL elements with data-section
-        document.querySelectorAll('[data-section]').forEach(elem => {
-            elem.style.cursor = 'pointer';
-            elem.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                const sectionId = this.getAttribute('data-section');
-                console.log('Clicked:', sectionId);
-                
-                // Hide all
-                allSections.forEach(s => s.style.display = 'none');
-                document.querySelectorAll('[data-section]').forEach(l => l.classList.remove('active'));
-                
-                // Show selected
-                this.classList.add('active');
-                const target = document.getElementById(sectionId);
-                if (target) {
-                    target.style.display = 'block';
-                    target.classList.add('active');
-                }
-            });
-        });
-    }, 200);
-});
-
-
-</script>
+    </script>
 </body>
 </html>
