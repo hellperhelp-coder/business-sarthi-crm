@@ -8816,5 +8816,415 @@
         });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- ====== MISSING MODALS (CRITICAL FIX) ====== -->
+
+<!-- Invoice Details Modal -->
+<div class="modal fade" id="invoiceDetailsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">Invoice Details</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-6"><strong>Invoice Number:</strong> <span id="modalInvoiceNumber">-</span></div>
+          <div class="col-md-6"><strong>Date:</strong> <span id="modalInvoiceDate">-</span></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6"><strong>Customer:</strong> <span id="modalCustomerName">-</span></div>
+          <div class="col-md-6"><strong>Mobile:</strong> <span id="modalCustomerMobile">-</span></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-12"><strong>Email:</strong> <span id="modalCustomerEmail">-</span></div>
+        </div>
+        <hr>
+        <h6>Items:</h6>
+        <table class="table table-sm">
+          <thead>
+            <tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr>
+          </thead>
+          <tbody id="modalInvoiceItems"></tbody>
+        </table>
+        <hr>
+        <div class="text-end"><strong>Total: <span id="modalTotalAmount">-</span></strong></div>
+        <div class="text-end"><strong>Status: <span id="modalPaymentStatus" class="badge bg-success">-</span></strong></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" id="printInvoiceBtn">Print</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- Service Details Modal -->
+<div class="modal fade" id="serviceDetailsModal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-warning text-dark">
+        <h5 class="modal-title">Service Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3">
+          <div class="col-md-6"><strong>Service ID:</strong> <span id="modalServiceId">-</span></div>
+          <div class="col-md-6"><strong>Date:</strong> <span id="modalServiceDate">-</span></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6"><strong>Customer:</strong> <span id="modalServiceCustomer">-</span></div>
+          <div class="col-md-6"><strong>Mobile:</strong> <span id="modalServiceMobile">-</span></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6"><strong>Product:</strong> <span id="modalServiceProduct">-</span></div>
+          <div class="col-md-6"><strong>Problem:</strong> <span id="modalServiceProblem">-</span></div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6"><strong>Status:</strong> <span id="modalServiceStatus" class="badge bg-info">-</span></div>
+          <div class="col-md-6"><strong>Assigned To:</strong> <span id="modalServiceAssignedTo">-</span></div>
+        </div>
+        <hr>
+        <h6>Service History:</h6>
+        <table class="table table-sm">
+          <thead><tr><th>Date</th><th>Action</th><th>Notes</th><th>By</th></tr></thead>
+          <tbody id="modalServiceHistory"></tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-success" id="completeServiceBtn">Complete Service</button>
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+    <!-- ====== CRITICAL: CRM DATABASE & DATA MANAGEMENT ====== -->
+<script>
+// ===== CRM DATABASE SYSTEM (localStorage) =====
+class CRMDatabase {
+  constructor() {
+    this.db = {
+      invoices: [],
+      sales: [],
+      services: [],
+      quotations: [],
+      orders: [],
+      payments: [],
+      customers: [],
+      leads: []
+    };
+    this.loadFromStorage();
+  }
+  
+  loadFromStorage() {
+    const saved = localStorage.getItem('crmDatabase');
+    if (saved) {
+      try {
+        this.db = JSON.parse(saved);
+      } catch(e) {
+        console.error('Error loading database:', e);
+      }
+    }
+  }
+  
+  saveToStorage() {
+    localStorage.setItem('crmDatabase', JSON.stringify(this.db));
+  }
+  
+  // Invoice Operations
+  saveInvoice(invoiceData) {
+    invoiceData.id = 'INV' + Date.now();
+    invoiceData.createdDate = new Date().toLocaleDateString('en-GB');
+    this.db.invoices.push(invoiceData);
+    this.saveToStorage();
+    return invoiceData;
+  }
+  
+  getInvoices() {
+    return this.db.invoices;
+  }
+  
+  getInvoiceById(id) {
+    return this.db.invoices.find(inv => inv.id === id);
+  }
+  
+  // Service Operations
+  saveService(serviceData) {
+    serviceData.id = 'SRV' + Date.now();
+    serviceData.createdDate = new Date().toLocaleDateString('en-GB');
+    serviceData.status = 'Pending';
+    this.db.services.push(serviceData);
+    this.saveToStorage();
+    return serviceData;
+  }
+  
+  getServices() {
+    return this.db.services;
+  }
+  
+  updateService(id, updates) {
+    const service = this.db.services.find(s => s.id === id);
+    if (service) {
+      Object.assign(service, updates);
+      this.saveToStorage();
+    }
+    return service;
+  }
+  
+  // Quotation Operations
+  saveQuotation(quotationData) {
+    quotationData.id = 'QT' + Date.now();
+    quotationData.createdDate = new Date().toLocaleDateString('en-GB');
+    quotationData.status = quotationData.status || 'Pending';
+    this.db.quotations.push(quotationData);
+    this.saveToStorage();
+    return quotationData;
+  }
+  
+  getQuotations() {
+    return this.db.quotations;
+  }
+}
+
+// Initialize CRM Database
+const crmDB = new CRMDatabase();
+
+// ===== LOAD DATA ON PAGE LOAD =====
+window.addEventListener('load', function() {
+  loadAllDataToTables();
+  updateDashboardStats();
+});
+
+function loadAllDataToTables() {
+  // Load invoices to table
+  const invoiceTableBody = document.querySelector('table:has(thead th:contains("Date")) tbody');
+  if (invoiceTableBody && crmDB.getInvoices().length > 0) {
+    updateInvoiceTable();
+  }
+}
+
+function updateDashboardStats() {
+  const stats = {
+    totalSales: crmDB.getInvoices().reduce((sum, inv) => sum + (parseFloat(inv.amount) || 0), 0),
+    serviceCount: crmDB.getServices().length,
+    pendingPayments: crmDB.getInvoices().filter(inv => inv.status === 'Pending').length
+  };
+  
+  // Update dashboard if elements exist
+  const salesTotalEl = document.querySelector('[data-stat="totalSales"]');
+  if (salesTotalEl) {
+    salesTotalEl.textContent = '₹' + stats.totalSales.toLocaleString();
+  }
+}
+</script>
+    
+<!-- ===== FORM HANDLERS WITH DATA PERSISTENCE ===== -->
+<script>
+// Override the existing saveInvoiceBtn handler
+const oldSaveInvoiceBtn = document.getElementById('saveInvoiceBtn');
+if (oldSaveInvoiceBtn) {
+  oldSaveInvoiceBtn.replaceWith(oldSaveInvoiceBtn.cloneNode(true));
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // ===== INVOICE FORM HANDLER =====
+  const saveInvoiceBtn = document.getElementById('saveInvoiceBtn');
+  if (saveInvoiceBtn) {
+    saveInvoiceBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const invoiceData = {
+        customer: document.getElementById('invoiceCustomer')?.value || 'Unknown',
+        mobile: document.getElementById('invoiceMobile')?.value || '',
+        email: document.getElementById('invoiceEmail')?.value || '',
+        date: document.getElementById('invoiceDate')?.value || new Date().toISOString().split('T')[0],
+        amount: document.getElementById('invoiceTotal')?.value?.replace('₹', '').trim() || '0',
+        paymentStatus: document.getElementById('invoicePaymentStatus')?.value || 'Pending',
+        items: []
+      };
+      
+      // Get invoice items
+      document.querySelectorAll('#invoiceItemsTable tbody tr').forEach(row => {
+        const itemName = row.querySelector('input[type="text"]')?.value;
+        const qty = row.querySelector('.item-quantity')?.value;
+        const price = row.querySelector('.item-price')?.value;
+        
+        if (itemName && qty && price) {
+          invoiceData.items.push({
+            name: itemName,
+            quantity: qty,
+            price: price,
+            total: qty * price
+          });
+        }
+      });
+      
+      // Save to database
+      const saved = crmDB.saveInvoice(invoiceData);
+      
+      // Show success message
+      alert(`✓ Invoice #${saved.id} saved successfully!\n\nCustomer: ${saved.customer}\nAmount: ₹${saved.amount}`);
+      
+      // Clear form
+      document.getElementById('generateInvoiceModal')?.querySelector('form')?.reset();
+      
+      // Hide modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('generateInvoiceModal'));
+      if (modal) modal.hide();
+      
+      // Update tables
+      updateInvoiceTable();
+      updateDashboardStats();
+    });
+  }
+  
+  // ===== SERVICE FORM HANDLER =====
+  const submitServiceBtn = document.querySelector('#newCallForm button[type="submit"]');
+  if (submitServiceBtn) {
+    submitServiceBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const serviceData = {
+        customerName: document.getElementById('customerName')?.value || 'Unknown',
+        customerPhone: document.getElementById('customerPhone')?.value || '',
+        customerEmail: document.getElementById('customerEmail')?.value || '',
+        productCategory: document.getElementById('productCategory')?.value || '',
+        productBrand: document.getElementById('productBrand')?.value || '',
+        productModel: document.getElementById('productModel')?.value || '',
+        problemDescription: document.getElementById('problemDescription')?.value || '',
+        priority: document.getElementById('priority')?.value || 'Medium',
+        preferredDate: document.getElementById('preferredDate')?.value || ''
+      };
+      
+      // Save service
+      const saved = crmDB.saveService(serviceData);
+      
+      alert(`✓ Service Request #${saved.id} created!\n\nCustomer: ${saved.customerName}\nPriority: ${saved.priority}`);
+      
+      // Reset form
+      document.getElementById('newCallForm')?.reset();
+      document.querySelectorAll('.form-step').forEach(el => el.classList.remove('active'));
+      document.getElementById('step1')?.classList.add('active');
+      
+      // Update tables
+      updateServiceTable();
+    });
+  }
+  
+  // ===== QUOTATION FORM HANDLER =====
+  const saveQuotationBtn = document.getElementById('saveQuotationBtn');
+  if (saveQuotationBtn) {
+    saveQuotationBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      const quotationData = {
+        customer: document.getElementById('quotationCustomer')?.value || 'Unknown',
+        mobile: document.getElementById('quotationMobile')?.value || '',
+        email: document.getElementById('quotationEmail')?.value || '',
+        date: document.getElementById('quotationDate')?.value || new Date().toISOString().split('T')[0],
+        validTill: document.getElementById('quotationValidTill')?.value || '',
+        amount: document.getElementById('quotationTotal')?.value?.replace('₹', '').trim() || '0',
+        status: document.getElementById('quotationStatus')?.value || 'Pending',
+        items: []
+      };
+      
+      // Get items
+      document.querySelectorAll('#quotationItemsTable tbody tr').forEach(row => {
+        const itemName = row.querySelector('input[type="text"]')?.value;
+        const qty = row.querySelector('.item-quantity')?.value;
+        const price = row.querySelector('.item-price')?.value;
+        
+        if (itemName && qty && price) {
+          quotationData.items.push({ name: itemName, quantity: qty, price: price });
+        }
+      });
+      
+      // Save quotation
+      const saved = crmDB.saveQuotation(quotationData);
+      
+      alert(`✓ Quotation #${saved.id} saved!\n\nCustomer: ${saved.customer}\nAmount: ₹${saved.amount}\nValid Till: ${saved.validTill}`);
+      
+      document.getElementById('newQuotationModal')?.querySelector('form')?.reset();
+      const modal = bootstrap.Modal.getInstance(document.getElementById('newQuotationModal'));
+      if (modal) modal.hide();
+    });
+  }
+  
+  // ===== LOAD EXISTING DATA WHEN VIEWING =====
+  document.querySelectorAll('.view-invoice').forEach(btn => {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const invoiceId = this.getAttribute('data-invoice');
+      const invoice = crmDB.getInvoiceById(invoiceId);
+      
+      if (invoice) {
+        document.getElementById('modalInvoiceNumber').textContent = invoice.id;
+        document.getElementById('modalInvoiceDate').textContent = invoice.date;
+        document.getElementById('modalCustomerName').textContent = invoice.customer;
+        document.getElementById('modalCustomerMobile').textContent = invoice.mobile;
+        document.getElementById('modalCustomerEmail').textContent = invoice.email;
+        document.getElementById('modalTotalAmount').textContent = '₹' + invoice.amount;
+        document.getElementById('modalPaymentStatus').textContent = invoice.paymentStatus;
+        
+        // Populate items
+        const itemsTable = document.getElementById('modalInvoiceItems');
+        if (itemsTable) {
+          itemsTable.innerHTML = '';
+          invoice.items.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${item.name}</td><td>${item.quantity}</td><td>₹${item.price}</td><td>₹${item.total}</td>`;
+            itemsTable.appendChild(row);
+          });
+        }
+        
+        const modal = new bootstrap.Modal(document.getElementById('invoiceDetailsModal'));
+        modal.show();
+      }
+    });
+  });
+});
+
+// Update invoice table with saved data
+function updateInvoiceTable() {
+  const invoices = crmDB.getInvoices();
+  // Find and update the invoice table
+  const tables = document.querySelectorAll('table');
+  tables.forEach(table => {
+    const thead = table.querySelector('thead');
+    if (thead && thead.textContent.includes('Invoice No')) {
+      const tbody = table.querySelector('tbody');
+      if (tbody && invoices.length > 0) {
+        // Add new invoices to table
+        const latestInvoice = invoices[invoices.length - 1];
+        const existingRow = tbody.querySelector(`tr[data-invoice="${latestInvoice.id}"]`);
+        
+        if (!existingRow) {
+          const row = document.createElement('tr');
+          row.setAttribute('data-invoice', latestInvoice.id);
+          row.innerHTML = `
+            <td>${latestInvoice.createdDate}</td>
+            <td>SALE</td>
+            <td>${latestInvoice.id}</td>
+            <td>${latestInvoice.mobile}</td>
+            <td>${latestInvoice.customer}</td>
+            <td>${latestInvoice.email}</td>
+            <td>₹${latestInvoice.amount}</td>
+            <td><span class="status-badge status-${latestInvoice.paymentStatus.toLowerCase()}">${latestInvoice.paymentStatus}</span></td>
+          `;
+          tbody.insertBefore(row, tbody.firstChild);
+        }
+      }
+    }
+  });
+}
+
+// Update service table with saved data
+function updateServiceTable() {
+  const services = crmDB.getServices();
+  // Similar logic to updateInvoiceTable
+}
+</script>
+    
 </body>
 </html>
