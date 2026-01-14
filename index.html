@@ -9285,11 +9285,11 @@ if (serviceForm) {
     const serviceData = {
       id: 'SR' + String(crmDB.getServices().length + 1).padStart(3, '0'),
       customerName: document.getElementById('serviceCustName')?.value || '',
-      mobile: document.getElementById('serviceCustMobile')?.value || '',
+      customerPhone: document.getElementById('serviceCustMobile')?.value || '',
       email: document.getElementById('serviceCustEmail')?.value || '',
-      product: document.getElementById('serviceProduct')?.value || '',
+      productCategory: document.getElementById('serviceProduct')?.value || '',
       amount: parseFloat(document.getElementById('serviceAmount')?.value || 0),
-      description: document.getElementById('serviceProblem')?.value || '',
+      problemDescription: document.getElementById('serviceProblem')?.value || '',
       status: 'Pending',
       createdDate: new Date().toLocaleDateString('en-GB')
     };
